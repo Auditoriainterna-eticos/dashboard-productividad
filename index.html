@@ -2198,6 +2198,49 @@
         function imprimirInforme() {
             window.print();
         }
+    async function cargarCSVAutomatico() {
+    try {
+        const response = await fetch('datos.csv');
+        const texto = await response.text();
+
+        const filas = texto.split('\n').map(f => f.split(','));
+        const headers = filas[0];
+        const datos = filas.slice(1).filter(f => f.length > 1);
+
+        datosOriginales = datos.map(fila => {
+            let obj = {};
+            headers.forEach((h, i) => {
+                obj[h.trim()] = fila[i];
+            });
+            return {
+                Fecha: obj['FECHA'],
+                Mes: obj['MES'],
+                Semana: obj['SEMANA'],
+                NumeroSemana: parseInt(obj['NUMERO_SEMANA'] || 0),
+                Sede: obj['SEDE'],
+                Auxiliar: obj['AUXILIAR'],
+                Facturas_Totales: parseFloat(obj['FACTURA'] || 0),
+                Tiempo_Promedio_Min: parseFloat(obj['TIEMPO_MIN'] || 0),
+                SumaTiempos: parseFloat(obj['TIEMPO_MIN'] || 0),
+                CountTiempos: 1,
+                Anulaciones: 0,
+                Factores: ''
+            };
+        });
+
+        document.getElementById('uploadBanner').style.display = 'none';
+        document.getElementById('dashboardContent').style.display = 'block';
+
+        inicializarDashboard();
+        aplicarFiltros();
+
+    } catch (error) {
+        console.error("Error cargando CSV:", error);
+    }
+}
+
+window.addEventListener('DOMContentLoaded', cargarCSVAutomatico);
+
     </script>
     
     <style media="print">
