@@ -2240,6 +2240,41 @@
 }
 
 window.addEventListener('DOMContentLoaded', cargarCSVAutomatico);
+async function cargarExcelAutomatico() {
+    try {
+        const response = await fetch('datos.xlsx');
+        if (!response.ok) {
+            throw new Error("No se pudo cargar datos.xlsx");
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+        // Simular carga manual reutilizando tu función existente
+        datosOriginales = jsonData;
+        inicializarDashboard();
+        aplicarFiltros();
+
+        // Ocultar banner de subida
+        const uploadBanner = document.getElementById('uploadBanner');
+        if (uploadBanner) uploadBanner.style.display = 'none';
+
+        const dashboardContent = document.getElementById('dashboardContent');
+        if (dashboardContent) dashboardContent.style.display = 'block';
+
+        console.log("Excel cargado automáticamente correctamente");
+
+    } catch (error) {
+        console.error("Error cargando Excel automático:", error);
+    }
+}
+
+window.addEventListener('DOMContentLoaded', cargarExcelAutomatico);
 
     </script>
     
